@@ -1,6 +1,3 @@
-import {
-  getCurrent
-} from '@/api/reservoir'
 export default {
   namespaced: true,
   state: {
@@ -11,10 +8,8 @@ export default {
       state.currtentID = palyad
     },
     closeId(state) {
-      state.currtentID = null
+      state.currtentID = ''
     }
   },
-  actions: {
-
-  }
+  actions: {}
 }

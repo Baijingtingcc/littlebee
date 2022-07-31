@@ -4,7 +4,8 @@
       <el-card shadow="always" class="card">
         <el-row :gutter="20">
           <el-col :span="6"
-            ><div class="grid-content bg-purple count">
+          >
+            <div class="grid-content bg-purple count">
               <p class="title">入库单号</p>
               <el-input
                 placeholder="请输入"
@@ -12,10 +13,13 @@
                 clearable
                 class="card-input"
               >
-              </el-input></div
-          ></el-col>
+              </el-input>
+            </div
+            >
+          </el-col>
           <el-col :span="6"
-            ><div class="grid-content bg-purple count">
+          >
+            <div class="grid-content bg-purple count">
               <p class="title">运单编号</p>
               <el-input
                 placeholder="请输入"
@@ -23,10 +27,13 @@
                 clearable
                 class="card-input"
               >
-              </el-input></div
-          ></el-col>
+              </el-input>
+            </div
+            >
+          </el-col>
           <el-col :span="6"
-            ><div class="grid-content bg-purple count">
+          >
+            <div class="grid-content bg-purple count">
               <p class="title">货主名称</p>
               <el-input
                 placeholder="请输入"
@@ -34,8 +41,10 @@
                 clearable
                 class="card-input"
               >
-              </el-input></div
-          ></el-col>
+              </el-input>
+            </div
+            >
+          </el-col>
           <el-col :span="6">
             <el-button round class="btn1" @click="onSearch">搜索</el-button>
             <el-button round class="btn" @click="onReset">重置</el-button>
@@ -46,9 +55,10 @@
     <div class="divContentBox">
       <el-card shadow="always">
         <div class="content-btn">
-          <el-button round class="btn1" type="primary"> 新增入库单 </el-button>
+          <el-button round class="btn1" type="primary" @click="$router.push('addOutbound')"> 新增入库单</el-button>
           <el-button round class="btn2" @click="onsubmitWork"
-            >生成收货任务</el-button
+          >生成收货任务
+          </el-button
           >
         </div>
         <div class="table">
@@ -66,7 +76,7 @@
             @selection-change="changeList"
             ref="closeShow"
           >
-            <el-table-column type="selection" width="55"> </el-table-column>
+            <el-table-column type="selection" width="55"></el-table-column>
             <el-table-column type="index" label="序号" width="80">
             </el-table-column>
             <el-table-column prop="code" label="入库单号" width="100">
@@ -109,7 +119,8 @@
                   @click="handleClick(scope.row)"
                   type="text"
                   size="medium"
-                  >查看详情</el-button
+                >查看详情
+                </el-button
                 >
               </template>
             </el-table-column>
@@ -118,11 +129,11 @@
             <el-pagination
               @size-change="handleSizeChange"
               @current-change="handleCurrentChange"
-              :current-page="1"
+              :current-page="page.currtent"
               :page-sizes="[10, 20, 30, 40]"
-              :page-size="10"
+              :page-size="page.size"
               layout="total, sizes, prev, pager, next, jumper"
-              :total="list.length"
+              :total="+total"
             >
             </el-pagination>
           </div>
@@ -144,7 +155,8 @@
           @click="handleClose"
           round
           style="color: #000"
-          >确 定</el-button
+        >确 定
+        </el-button
         >
       </template>
     </el-dialog>
@@ -154,6 +166,7 @@
 <script>
 import { mapGetters } from 'vuex'
 import { getPageDetail, postipsReceiving } from '@/api/warehouse'
+
 export default {
   data() {
     return {
@@ -164,7 +177,12 @@ export default {
       checkedIdList: [],
       list: [],
       checkedList: [],
-      errorWhy: ''
+      errorWhy: '',
+      page: {
+        currtent: 1,
+        size: 10
+      },
+      total: ''
     }
   },
   methods: {
@@ -175,17 +193,20 @@ export default {
         code: this.inputRkdh, // 入库单号
         billCode: this.inputYdbh, // 运单编号
         ownerName: this.inputHzmc, // 货主名称
-        current: 1, // 当前页
-        size: 10 // 每页显示几条
+        current: this.page.currtent, // 当前页
+        size: this.page.size // 每页显示几条
       })
       this.list = data.records
-      console.log(this.list)
+      this.total = data.total
+      console.log(data)
     },
     handleSizeChange(val) {
       console.log(`每页 ${val} 条`)
     },
     handleCurrentChange(val) {
       console.log(`当前页: ${val}`)
+      this.page.currtent = val
+      this.getPageDetail()
     },
     onSearch() {
       this.getPageDetail()
@@ -194,9 +215,11 @@ export default {
       this.inputRkdh = ''
       this.inputYdbh = ''
       this.inputHzmc = ''
+      this.getPageDetail()
     },
     handleClick(str) {
       console.log(str)
+      this.$store.commit('outbound/editOutbound', str)
       this.$router.push({
         path: '/navbar/CheckDetails'
       })
@@ -228,6 +251,8 @@ export default {
     handleClose() {
       this.isShow = false
       this.checkedList = []
+      this.errorWhy = ''
+      this.checkedIdList = []
       this.$refs.closeShow.clearSelection()
     }
   },
@@ -237,91 +262,107 @@ export default {
   computed: {
     ...mapGetters(['pageList'])
   },
-  mounted() {}
+  mounted() {
+  }
 }
 </script>
 
 <style scoped lang="less">
 .ckd {
   padding: 20px 20px 0 220px;
+
   .card {
     padding: 10px;
     margin-bottom: 10px;
     border-radius: 12px;
+
     .count {
       .title {
         font-size: 14px;
         margin-bottom: 15px;
         color: #afa096;
       }
+
       .card-input {
         width: 200px;
         height: 40px;
         line-height: 40px;
         border: 1px solid #f8f5f5;
         border-radius: 6px;
-        /deep/.el-input__inner {
+
+        /deep/ .el-input__inner {
           background-color: #f8f5f5;
         }
       }
     }
+
     .btn {
       margin: 30px 15px;
       font-size: 15px;
       color: #000;
+
       &:hover {
         background-color: #ff8e00;
       }
     }
+
     .btn1 {
       font-size: 15px;
       color: #000;
       margin: 30px 15px;
       background-color: #ffb200;
+
       &:hover {
         background-color: #ff8e00;
       }
     }
   }
+
   .divContentBox {
     padding: 10px 0;
     margin-bottom: 20px;
     border-radius: 12px;
+
     .content-btn {
       margin-bottom: 20px;
+
       .btn1 {
         background-color: #00be76;
         font-size: 15px;
         border: none;
+
         &:hover {
           background-color: #007a4c;
         }
       }
+
       .btn2 {
         margin-left: 30px;
         background-color: #f8f5f5;
         font-size: 15px;
         border: none;
         color: #000;
+
         &:hover {
           background-color: #ffb200;
           color: #000;
         }
       }
     }
+
     .block {
       margin-left: 300px;
     }
   }
+
   .title {
-    margin: 0;
+    margin: 0 10px;
     margin-bottom: 10px;
-    font-size: 16px;
-    font-family: PingFangSC-Semibold, PingFang SC;
-    font-weight: 600;
+    font-size: 14px;
     color: #332929;
     line-height: 22px;
   }
+
   .cardWork {
     box-sizing: border-box;
     height: 180px;
@@ -333,6 +374,7 @@ export default {
     margin-right: 15px;
     margin-top: 3px;
     padding: 21px 20px 14px 21px;
+
     .oneWork {
       height: 24px;
       font-size: 16px;
@@ -342,6 +384,7 @@ export default {
       color: #332929;
       line-height: 24px;
     }
+
     .twoWork {
       color: #d9021c;
       height: 22px;
@@ -354,6 +397,7 @@ export default {
       margin-bottom: 6px;
       text-align: center;
     }
+
     .thereWork {
       font-size: 14px;
       font-family: PingFangSC, PingFangSC-Regular;

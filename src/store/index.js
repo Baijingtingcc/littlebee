@@ -6,6 +6,8 @@ import getters from './getter'
 import invoice from './modules/invoice'
 import editPage from './modules/editPage'
 import reservoir from './modules/reservoir'
+import outbound from '@/store/modules/outbound'
+
 Vue.use(Vuex)
 
 export default new Vuex.Store({
@@ -18,6 +20,7 @@ export default new Vuex.Store({
     homePage,
     invoice,
     editPage,
-    reservoir
+    reservoir,
+    outbound
   }
 })

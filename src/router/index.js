@@ -37,7 +37,8 @@ const routes = [
       {
         path: 'editPage',
         component: () => import('@/views/Warehouse/editPage')
-      }, {
+      },
+      {
         path: 'addWareHouse',
         component: () => import('@/views/Warehouse/addWareHouse')
       },
@@ -48,10 +49,21 @@ const routes = [
       {
         path: 'addReservoir',
         component: () => import('@/views/Reservoir/addReservoir')
+      },
+      {
+        path: 'location',
+        component: () => import('@/views/Location')
+      },
+      {
+        path: 'addLocation',
+        component: () => import('@/views/Location/addLocation')
+      },
+      {
+        path: 'addOutbound',
+        component: () => import('@/views/outbound/addOutbound')
       }
     ]
   }
-
 ]
 
 const router = new VueRouter({

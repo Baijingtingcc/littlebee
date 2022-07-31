@@ -2,7 +2,7 @@
   <div class="navigation">
     <el-row class="tac">
       <el-col :span="12" class="nav">
-        <h1><img src="@/assets/beelogo.png" alt="" class="logo" /></h1>
+        <h1><img src="@/assets/beelogo.png" alt="" class="logo"/></h1>
         <el-menu
           active-text-color="#ffb200"
           default-active="2"
@@ -24,7 +24,8 @@
                 :key="index"
                 :index="item.id"
                 @click="changeTags(item)"
-                >{{ item.text }}</el-menu-item
+              >{{ item.text }}
+              </el-menu-item
               >
             </el-menu-item-group>
           </el-submenu>
@@ -43,7 +44,8 @@
                 :key="index"
                 :index="item.id"
                 @click="changeTags(item)"
-                >{{ item.text }}</el-menu-item
+              >{{ item.text }}
+              </el-menu-item
               >
             </el-menu-item-group>
           </el-submenu>
@@ -62,7 +64,8 @@
                 :key="index"
                 :index="item.id"
                 @click="changeTags(item)"
-                >{{ item.text }}</el-menu-item
+              >{{ item.text }}
+              </el-menu-item
               >
             </el-menu-item-group>
           </el-submenu>
@@ -81,7 +84,8 @@
                 :key="index"
                 :index="item.id"
                 @click="changeTags(item)"
-                >{{ item.text }}</el-menu-item
+              >{{ item.text }}
+              </el-menu-item
               >
             </el-menu-item-group>
           </el-submenu>
@@ -100,7 +104,8 @@
                 :key="index"
                 :index="item.id"
                 @click="changeTags(item)"
-                >{{ item.text }}</el-menu-item
+              >{{ item.text }}
+              </el-menu-item
               >
             </el-menu-item-group>
           </el-submenu>
@@ -138,6 +143,7 @@
 
 <script>
 import { mapGetters } from 'vuex'
+
 export default {
   data() {
     return {
@@ -245,7 +251,10 @@ export default {
         this.$router.push('/navbar/Warehouse')
       } else if (key.text === '库区管理') {
         this.$router.push('reservoir')
+      } else if (key.text === '库位管理') {
+        this.$router.push('location')
       }
+
       console.log(key)
     },
     // 移除tag标签
@@ -263,6 +272,7 @@ export default {
   width: 100%;
   height: 100%;
   position: relative;
+
   .tac {
     position: fixed;
     top: 0;
@@ -271,10 +281,12 @@ export default {
     height: 100%;
     background-color: #fff;
     z-index: 9999;
+
     .nav {
       width: 100%;
     }
   }
+
   h1 {
     .logo {
       width: 150px;
@@ -282,9 +294,11 @@ export default {
     }
   }
 }
+
 .nav-item {
   color: #887e7e;
 }
+
 .tag {
   background-color: #f5f1f1;
   width: 1160px;
@@ -293,6 +307,7 @@ export default {
   align-items: center;
   position: relative;
   margin-left: 200px;
+
   .gzt {
     padding: 0 15px 0 15px;
     font-size: 13px;
@@ -303,9 +318,11 @@ export default {
     border: none;
     cursor: pointer;
   }
+
   .el-tag {
     line-height: 36px;
   }
+
   .close {
     font-size: 13px;
     height: 36px;
@@ -315,6 +332,7 @@ export default {
     margin-right: 15px;
     cursor: pointer;
   }
+
   .righttag {
     // margin-left: 850px;
     width: 36px;
