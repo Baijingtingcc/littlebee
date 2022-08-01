@@ -52,3 +52,18 @@ export const getOutBound = (params) => {
     params
   })
 }
+// 货品
+export const getGoods = (params) => {
+  return request({
+    url: 'api/goods/pageDetail',
+    params
+  })
+}
+// 添加货品
+export const postAddGoods = (data) => {
+  return request({
+    method: 'POST',
+    url: 'ips/receiptList/batch',
+    data
+  })
+}

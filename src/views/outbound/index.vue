@@ -129,7 +129,7 @@
             <el-pagination
               @size-change="handleSizeChange"
               @current-change="handleCurrentChange"
-              :current-page="page.currtent"
+              :current-page="page.current"
               :page-sizes="[10, 20, 30, 40]"
               :page-size="page.size"
               layout="total, sizes, prev, pager, next, jumper"
@@ -179,7 +179,7 @@ export default {
       checkedList: [],
       errorWhy: '',
       page: {
-        currtent: 1,
+        current: 1,
         size: 10
       },
       total: ''
@@ -193,7 +193,7 @@ export default {
         code: this.inputRkdh, // 入库单号
         billCode: this.inputYdbh, // 运单编号
         ownerName: this.inputHzmc, // 货主名称
-        current: this.page.currtent, // 当前页
+        current: this.page.current, // 当前页
         size: this.page.size // 每页显示几条
       })
       this.list = data.records
@@ -205,7 +205,7 @@ export default {
     },
     handleCurrentChange(val) {
       console.log(`当前页: ${val}`)
-      this.page.currtent = val
+      this.page.current = val
       this.getPageDetail()
     },
     onSearch() {

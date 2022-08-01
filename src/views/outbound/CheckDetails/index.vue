@@ -2,7 +2,7 @@
   <div class="CheckDetails">
     <div v-if="active === 3">
       <el-card shadow="always">
-        <el-collapse @change="handleChange">
+        <el-collapse @change="handleChange" v-model="collName">
           <el-collapse-item title="基础信息" name="1">
             <div>
               <el-steps :active="active" space="40%" class="Twostep">
@@ -44,7 +44,7 @@
     </div>
     <div v-else>
       <el-card shadow="always">
-        <el-collapse @change="handleChange">
+        <el-collapse @change="handleChange" v-model="collName">
           <el-collapse-item title="基础信息" name="1">
             <div>
               <el-steps :active="active" space="40%" class="sixStep">
@@ -88,7 +88,7 @@
       </el-card>
       <el-card shadow="always" class="card">
         <el-collapse @change="handleChange">
-          <el-collapse-item title="货主信息" name="1">
+          <el-collapse-item title="货主信息" name="3">
             <div class="card-status">
               <el-row :gutter="20">
                 <el-col :span="6">
@@ -122,7 +122,7 @@
       </el-card>
       <el-card shadow="always" class="card">
         <el-collapse @change="handleChange">
-          <el-collapse-item title="货品信息" name="1">
+          <el-collapse-item title="货品信息" name="4">
             <div>
               <div class="title">
                 <p>总计:20个总体积15.0m²</p>
@@ -186,13 +186,23 @@
                   width="100">
                 </el-table-column>
               </el-table>
+              <el-pagination
+                class="page"
+                @size-change="handleSizeChange"
+                @current-change="handleCurrentChange"
+                :current-page="1"
+                :page-sizes="[10, 20, 30, 40]"
+                :page-size="+page.size"
+                layout="total, sizes, prev, pager, next, jumper"
+                :total="+total">
+              </el-pagination>
             </div>
           </el-collapse-item>
         </el-collapse>
       </el-card>
       <el-card shadow="always" class="card">
         <el-collapse @change="handleChange">
-          <el-collapse-item title="运输信息" name="1">
+          <el-collapse-item title="运输信息" name="5">
             <div class="card-status">
               <el-row :gutter="20">
                 <el-col :span="6">
@@ -240,7 +250,7 @@
       </el-card>
       <el-card shadow="always" class="card">
         <el-collapse @change="handleChange">
-          <el-collapse-item title="任务信息" name="1">
+          <el-collapse-item title="任务信息" name="6">
             <div class="shrw">
               <div class="titlerw">
                 <p>收货任务</p>
@@ -345,13 +355,14 @@
                     </div>
                   </el-col>
                 </el-row>
-                <p>损益明细</p>
+                <p class="symx">损益明细</p>
                 <el-table
+                  :header-cell-style="{'text-align':'center',background:'#f9f6ee'}"
+                  :cell-style="{'text-align':'center'}"
                   :data="idList"
                   border
                   style="width: 100%">
                   <el-table-column
-                    fixed
                     prop="code"
                     label="损益单号"
                     width="150">
@@ -359,44 +370,52 @@
                   <el-table-column
                     prop="warehouseName"
                     label="仓库名称"
-                    width="120">
+                    width="150">
                   </el-table-column>
                   <el-table-column
                     prop="locationName"
                     label="库位名称"
-                    width="120">
+                    width="150">
                   </el-table-column>
                   <el-table-column
                     prop="ownerName"
                     label="货主名称"
-                    width="120">
+                    width="150">
                   </el-table-column>
                   <el-table-column
                     prop="goodsName"
                     label="货品名称"
-                    width="300">
+                    width="150">
                   </el-table-column>
                   <el-table-column
                     prop="idNum"
                     label="损益数量"
-                    width="120">
+                    width="150">
                   </el-table-column>
                   <el-table-column
                     prop="idMoney"
                     label="损益金额"
-                    width="120">
+                    width="150">
                   </el-table-column>
                   <el-table-column
                     prop="updateTime"
                     label="处理时间"
-                    width="120">
+                    width="250">
                   </el-table-column>
                   <el-table-column
                     prop="status"
                     label="损益单状态"
-                    width="120">
+                    width="150">
                   </el-table-column>
                 </el-table>
+                <el-pagination
+                  class="page"
+                  :current-page="1"
+                  :page-sizes="[10, 20, 30, 40]"
+                  :page-size="10"
+                  layout="total, sizes, prev, pager, next, jumper"
+                  :total="idList.length">
+                </el-pagination>
               </div>
             </div>
           </el-collapse-item>
@@ -412,6 +431,7 @@ import { getCurrentOut, getOutBound } from '@/api/outbound'
 export default {
   data() {
     return {
+      collName: '1',
       active: null,
       currentId: '',
       owner: [],
@@ -420,7 +440,12 @@ export default {
       newTime: [],
       receivingEntity: {},
       groundingEntity: {},
-      idList: []
+      idList: [],
+      page: {
+        current: 1,
+        size: 10
+      },
+      total: null
     }
   },
   created() {
@@ -429,17 +454,28 @@ export default {
     this.getOutBound()
   },
   methods: {
+    // 分页
+    handleSizeChange(val) {
+      console.log(`每页 ${val} 条`)
+    },
+    handleCurrentChange(val) {
+      console.log(`当前页: ${val}`)
+      this.page.current = val
+      this.getOutBound()
+    },
     // 货品信息
     async getOutBound() {
       const { data } = await getOutBound({
-        masterId: this.currentId
+        masterId: this.currentId,
+        current: this.page.current,
+        size: this.page.size
       })
       this.tableData = data.data.records
-      console.log(this.tableData)
+      this.page.size = data.data.size
+      this.total = data.data.total
     },
     // 当前数据的详细信息
     async getCurrentOut() {
-      console.log(this.currentId)
       const { data } = await getCurrentOut(this.currentId)
       this.detailedInfo = data.data
       this.owner = data.data.owner
@@ -448,7 +484,6 @@ export default {
       this.receivingEntity = data.data.receivingEntity
       this.groundingEntity = data.data.groundingEntity
       this.idList = data.data.idList
-      console.log(data.data)
     },
     handleChange(val) {
       console.log(val)
@@ -508,6 +543,17 @@ export default {
       padding: 0 25px;
       margin: 20px 0;
     }
+  }
+
+  .symx {
+    margin: 20px 0;
+    color: #000;
+    font-size: 15px;
+  }
+
+  .page {
+    margin-left: 280px;
+    margin-top: 20px;
   }
 }
 </style>
