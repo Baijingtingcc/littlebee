@@ -67,3 +67,26 @@ export const postAddGoods = (data) => {
     data
   })
 }
+// 取消入库单
+export const delOutBound = (data) => {
+  return request({
+    method: 'PUT',
+    url: 'ips/receipt/cancel',
+    data
+  })
+}
+// 修改详情
+export const editCurrent = (id) => {
+  return request({
+    method: 'GET',
+    url: `ips/receipt/${id}`
+  })
+}
+// 修改详情
+export const editCurrentPut = (data) => {
+  return request({
+    method: 'PUT',
+    url: 'ips/receipt',
+    data
+  })
+}

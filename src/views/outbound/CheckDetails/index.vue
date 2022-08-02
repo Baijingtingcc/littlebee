@@ -42,6 +42,187 @@
         </el-collapse>
       </el-card>
     </div>
+    <div v-else-if="active === 0">
+      <el-card shadow="always">
+        <el-collapse @change="handleChange" v-model="collName">
+          <el-collapse-item title="基础信息" name="1">
+            <div>
+              <el-steps :active="active" space="40%" class="sixStep">
+                <el-step title="新建" :description="newTime[0]"></el-step>
+                <el-step title="收货中"></el-step>
+                <el-step title="收货完成"></el-step>
+                <el-step title="上架中"></el-step>
+                <el-step title="上架完成"></el-step>
+              </el-steps>
+            </div>
+            <div class="card-status">
+              <el-row :gutter="20">
+                <el-col :span="6">
+                  <div class="grid-content bg-purple">
+                    <p class="text">入库单号</p>
+                    <p class="data">{{ detailedInfo.code }}</p>
+                  </div>
+                </el-col>
+                <el-col :span="6">
+                  <div class="grid-content bg-purple">
+                    <p class="text">创建时间</p>
+                    <p class="data">{{ detailedInfo.createTime }}</p>
+                  </div>
+                </el-col>
+                <el-col :span="6">
+                  <div class="grid-content bg-purple">
+                    <p class="text">计划到达时间</p>
+                    <p class="data">{{ detailedInfo.planArrivalTime }}</p>
+                  </div>
+                </el-col>
+                <el-col :span="6">
+                  <div class="grid-content bg-purple">
+                    <p class="text">仓库名称</p>
+                    <p class="data">{{ detailedInfo.warehouseName }}</p>
+                  </div>
+                </el-col>
+              </el-row>
+            </div>
+          </el-collapse-item>
+        </el-collapse>
+      </el-card>
+      <el-card shadow="always" class="card">
+        <el-collapse @change="handleChange">
+          <el-collapse-item title="货主信息" name="3">
+            <div class="card-status">
+              <el-row :gutter="20">
+                <el-col :span="6">
+                  <div class="grid-content bg-purple">
+                    <p class="text">货主编号</p>
+                    <p class="data">{{ owner.code }}</p>
+                  </div>
+                </el-col>
+                <el-col :span="6">
+                  <div class="grid-content bg-purple">
+                    <p class="text">货主名称</p>
+                    <p class="data">{{ owner.name }}</p>
+                  </div>
+                </el-col>
+                <el-col :span="6">
+                  <div class="grid-content bg-purple">
+                    <p class="text">联系人</p>
+                    <p class="data">{{ owner.personName }}</p>
+                  </div>
+                </el-col>
+                <el-col :span="6">
+                  <div class="grid-content bg-purple">
+                    <p class="text">联系电话</p>
+                    <p class="data">{{ owner.phone }}</p>
+                  </div>
+                </el-col>
+              </el-row>
+            </div>
+          </el-collapse-item>
+        </el-collapse>
+      </el-card>
+      <el-card shadow="always" class="card">
+        <el-collapse @change="handleChange">
+          <el-collapse-item title="货品信息" name="4">
+            <div>暂无入库单</div>
+          </el-collapse-item>
+        </el-collapse>
+      </el-card>
+      <el-card shadow="always" class="card">
+        <el-collapse @change="handleChange">
+          <el-collapse-item title="运输信息" name="5">
+            <div class="card-status">
+              <el-row :gutter="20">
+                <el-col :span="6">
+                  <div class="grid-content bg-purple">
+                    <p class="text">运单编号</p>
+                    <p class="data">{{ detailedInfo.billCode }}</p>
+                  </div>
+                </el-col>
+                <el-col :span="6">
+                  <div class="grid-content bg-purple">
+                    <p class="text">承运商</p>
+                    <p class="data">{{ detailedInfo.carrierName }}</p>
+                  </div>
+                </el-col>
+                <el-col :span="6">
+                  <div class="grid-content bg-purple">
+                    <p class="text">计划到达时间</p>
+                    <p class="data">{{ detailedInfo.planArrivalTime }}</p>
+                  </div>
+                </el-col>
+                <el-col :span="6">
+                  <div class="grid-content bg-purple">
+                    <p class="text">发货人姓名</p>
+                    <p class="data">{{ detailedInfo.shipperName }}</p>
+                  </div>
+                </el-col>
+              </el-row>
+              <el-row style="margin-top: 20px" :gutter="20">
+                <el-col :span="6">
+                  <div class="grid-content bg-purple">
+                    <p class="text">送货人姓名</p>
+                    <p class="data">{{ detailedInfo.deliveryName }}</p>
+                  </div>
+                </el-col>
+                <el-col :span="6">
+                  <div class="grid-content bg-purple">
+                    <p class="text">送货人电话</p>
+                    <p class="data">{{ detailedInfo.deliveryPhone }}</p>
+                  </div>
+                </el-col>
+              </el-row>
+            </div>
+          </el-collapse-item>
+        </el-collapse>
+      </el-card>
+      <el-card shadow="always" class="card">
+        <el-collapse @change="handleChange">
+          <el-collapse-item title="任务信息" name="6">
+            <div class="shrw">
+              <div class="titlerw">
+                <p>收货任务</p>
+              </div>
+              <div class="card-status">
+                <el-row :gutter="20">
+                  <el-col :span="6">
+                    <div class="grid-content bg-purple">
+                      <p class="text">任务编号</p>
+                    </div>
+                  </el-col>
+                  <el-col :span="6">
+                    <div class="grid-content bg-purple">
+                      <p class="text">任务状态</p>
+                    </div>
+                  </el-col>
+                  <el-col :span="6">
+                    <div class="grid-content bg-purple">
+                      <p class="text">收货人</p>
+                    </div>
+                  </el-col>
+                  <el-col :span="6">
+                    <div class="grid-content bg-purple">
+                      <p class="text">开始时间</p>
+                    </div>
+                  </el-col>
+                </el-row>
+                <el-row style="margin-top: 20px" :gutter="20">
+                  <el-col :span="6">
+                    <div class="grid-content bg-purple">
+                      <p class="text">完成时间</p>
+                    </div>
+                  </el-col>
+                  <el-col :span="6">
+                    <div class="grid-content bg-purple">
+                      <p class="text">实收数量</p>
+                    </div>
+                  </el-col>
+                </el-row>
+              </div>
+            </div>
+          </el-collapse-item>
+        </el-collapse>
+      </el-card>
+    </div>
     <div v-else>
       <el-card shadow="always">
         <el-collapse @change="handleChange" v-model="collName">
@@ -436,7 +617,7 @@ export default {
       currentId: '',
       owner: [],
       tableData: [],
-      detailedInfo: [],
+      detailedInfo: {},
       newTime: [],
       receivingEntity: {},
       groundingEntity: {},
@@ -477,6 +658,7 @@ export default {
     // 当前数据的详细信息
     async getCurrentOut() {
       const { data } = await getCurrentOut(this.currentId)
+      console.log(data)
       this.detailedInfo = data.data
       this.owner = data.data.owner
       this.active = data.data.status

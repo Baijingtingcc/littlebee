@@ -156,7 +156,7 @@
           <el-col :span="6"
           >
             <div class="grid-content bg-purple">
-              <el-button round class="rowBtn1" @click="$router.back()">返回</el-button>
+              <el-button round class="rowBtn1" @click="cancelBtn">返回</el-button>
             </div>
           </el-col
           >
@@ -178,7 +178,7 @@
             <el-button round class="addBtn" @click="dialogVisible = true">添加货品</el-button>
             <el-button round class="delBtn" @click="dele">删除货品</el-button>
           </div>
-          <div v-if="goodsId.length>0">
+          <div v-if="addGoodsList.length>0">
             <div class="goodstitle" v-if="goodsInfoList.length>0">
               <p>总计: <span>{{ goodsInfoList.length }}件</span>&nbsp;&nbsp;<span>总体积:{{
                   goodsInfoList[0].goodsVolume
@@ -269,7 +269,7 @@
             <el-col :span="6"
             >
               <div class="grid-content bg-purple">
-                <el-button round class="rowBtn1" @click="$router.back()">返回</el-button>
+                <el-button round class="rowBtn1" @click="cancelBtn">返回</el-button>
               </div>
             </el-col
             >
@@ -383,7 +383,7 @@
         :total="+total">
       </el-pagination>
       <span slot="footer" class="dialog-footer">
-    <el-button @click="dialogVisible = false" class="dialogQuxiao" round>取 消</el-button>
+    <el-button @click="cancelBtn" class="dialogQuxiao" round>取 消</el-button>
     <el-button type="primary" @click="dialogAdd" round class="dialogAdd">确认添加</el-button>
     </span>
 
@@ -392,7 +392,16 @@
 </template>
 
 <script>
-import { getAddPK, getOwerId, getWareHouse, postOutBound, getOutBound, getGoods, postAddGoods } from '@/api/outbound'
+import {
+  getAddPK,
+  getOwerId,
+  getWareHouse,
+  postOutBound,
+  getOutBound,
+  getGoods,
+  postAddGoods,
+  editCurrent, editCurrentPut
+} from '@/api/outbound'
 
 export default {
   name: 'AddOutbound',
@@ -495,7 +504,34 @@ export default {
       dialogOwnerId: '',
       goodsId: [],
       dialogMasterId: '',
-      goodsInfoList: []
+      goodsInfoList: [],
+      statusList: [
+        {
+          type: 1,
+          value: '新建'
+        },
+        {
+          type: 2,
+          value: '收货中'
+        },
+        {
+          type: 3,
+          value: '已取消'
+        },
+        {
+          type: 4,
+          value: '收货完成'
+        },
+        {
+          type: 5,
+          value: '上架中'
+        },
+        {
+          type: 6,
+          value: '上架完成'
+        }
+      ],
+      editCurrentId: ''
     }
   },
   computed: {},
@@ -503,11 +539,43 @@ export default {
   created() {
     this.getAddPK()
     this.getOwerId()
+    this.editCurrentId = this.$store.state.outbound.currentEditId
+    console.log(this.editCurrentId)
+    this.editCurrent()
   },
   mounted() {
     this.restaurants = this.owner
   },
   methods: {
+    cancelBtn() {
+      this.$router.push('outbound')
+      this.dialogVisible = false
+      this.$store.commit('outbound/closeCurrentId')
+    },
+    // 修改详情
+    async editCurrent() {
+      if (this.editCurrentId) {
+        const { data } = await editCurrent(this.editCurrentId)
+        console.log(data)
+        this.formData = data.data
+        const res = await getWareHouse({
+          ownerId: this.formData.ownerId
+        })
+      } else {
+        this.formData = {
+          billCode: '', // 运单编号
+          code: '', // 入库单号
+          deliveryName: '', // 送货人
+          deliveryPhone: '', // 电话
+          ownerId: '', // 货主 传id
+          planArrivalTime: '', // 到达时间
+          remark: '', // 备注
+          shipperName: '', // 发货人
+          status: 1, // 状态
+          warehouseId: '' // 仓库id
+        }
+      }
+    },
     dialogSizeCgange(val) {
       console.log(`每页 ${val} 条`)
     },
@@ -536,13 +604,21 @@ export default {
     // 点击提交
     async onSubmit() {
       await this.$refs.form.validate()
+      if (this.editCurrentId) {
+        const res = await editCurrentPut(this.formData)
+        this.dialogMasterId = res.data.data.id
+        this.dialogOwnerId = res.data.data.ownerId
+        console.log(res)
+        this.$message.success('提交成功')
+      } else {
+        const res = await postOutBound(this.formData)
+        this.dialogMasterId = res.data.data.id
+        this.dialogOwnerId = res.data.data.ownerId
+        this.$message.success('新增成功')
+      }
       console.log(this.formData)
-      const res = await postOutBound(this.formData)
-      this.dialogMasterId = res.data.data.id
-      this.dialogOwnerId = res.data.data.ownerId
       await this.getGoods()
-      this.getOutBound()
-      this.$message.success('新增成功')
+      await this.getOutBound()
       this.active = 1
     },
     async getOutBound() {
@@ -644,15 +720,17 @@ export default {
         masterId: this.dialogMasterId
       })
       await this.getOutBound()
+      this.$store.commit('outbound/closeCurrentId')
       this.dialogVisible = false
     },
     goodsInfo(selection) {
       this.goodsInfoList = selection
       console.log(this.goodsInfoList.goodsVolume)
+    },
+    goodSubmit() {
+      this.$router.push('outbound')
+      this.$store.commit('outbound/closeCurrentId')
     }
-  },
-  goodSubmit() {
-    this.$router.push('outbound')
   }
 }
 </script>

@@ -253,6 +253,10 @@ export default {
         this.$router.push('reservoir')
       } else if (key.text === '库位管理') {
         this.$router.push('location')
+      } else if (key.text === '收货任务') {
+        this.$router.push('taskReceive')
+      } else if (key.text === '上架任务') {
+        this.$router.push('task-add')
       }
 
       console.log(key)

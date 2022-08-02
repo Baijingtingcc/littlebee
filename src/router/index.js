@@ -61,6 +61,18 @@ const routes = [
       {
         path: 'addOutbound',
         component: () => import('@/views/outbound/addOutbound')
+      },
+      {
+        path: 'taskReceive',
+        component: () => import('@/views/taskReceive')
+      },
+      {
+        path: 'taskCheckDetails',
+        component: () => import('@/views/taskReceive/CheckDetails')
+      },
+      {
+        path: 'task-add',
+        component: () => import('@/views/taskAdd')
       }
     ]
   }

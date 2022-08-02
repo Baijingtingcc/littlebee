@@ -105,7 +105,7 @@
               width="120"
             >
             </el-table-column>
-            <el-table-column prop="status" label="入库单状态" width="120">
+            <el-table-column :formatter="formatterStatus" prop="status" label="入库单状态" width="120">
             </el-table-column>
             <el-table-column prop="planNum" label="预计到货数" width="120">
             </el-table-column>
@@ -113,15 +113,40 @@
             </el-table-column>
             <el-table-column prop="createTime" label="创建时间" width="200">
             </el-table-column>
-            <el-table-column fixed="right" label="操作" width="200">
-              <template slot-scope="scope">
-                <el-button
-                  @click="handleClick(scope.row)"
-                  type="text"
-                  size="medium"
-                >查看详情
-                </el-button
-                >
+            <el-table-column fixed="right" label="操作" width="300">
+              <template v-slot="scope">
+                <div v-if="scope.row.status != 1">
+                  <el-button
+                    @click="handleClick(scope.row)"
+                    type="text"
+                    size="medium"
+                  >查看详情
+                  </el-button
+                  >
+                </div>
+                <div v-else>
+                  <el-button
+                    @click="editOutbound(scope.row)"
+                    type="text"
+                    size="medium"
+                  >修改详情
+                  </el-button
+                  >
+                  <el-button
+                    @click="handleDel(scope.row)"
+                    type="text"
+                    size="medium"
+                  >取消
+                  </el-button
+                  >
+                  <el-button
+                    @click="onGenerate(scope.row)"
+                    type="text"
+                    size="medium"
+                  >生成收货任务
+                  </el-button
+                  >
+                </div>
               </template>
             </el-table-column>
           </el-table>
@@ -142,7 +167,7 @@
     </div>
     <el-dialog :visible="isShow" width="30%" :before-close="handleClose">
       <div class="cardWork">
-        <p class="oneWork">{{ checkedList.length }}个收货任务生成失败!</p>
+        <p class="oneWork">{{ checkedIdList.length }}个收货任务生成失败!</p>
         <p class="twoWork">失败原因如下</p>
         <p class="thereWork">{{ errorWhy }}</p>
       </div>
@@ -160,16 +185,32 @@
         >
       </template>
     </el-dialog>
+    <el-dialog
+      class="cancelDailog"
+      :visible="dialogVisible"
+      width="30%"
+      :before-close="handleClose">
+      <template #title>
+        <p class="outboundDia">取消确认</p>
+      </template>
+      <span>确认取消入库单号为{{ currentInfo.code }}的入库单吗</span>
+      <span slot="footer" class="dialog-footer">
+    <el-button @click="dialogVisible = false" round class="btnCancel">取 消</el-button>
+    <el-button type="primary" @click="btnOk" round class="btnOk">确 定</el-button>
+  </span>
+    </el-dialog>
   </div>
 </template>
 
 <script>
 import { mapGetters } from 'vuex'
 import { getPageDetail, postipsReceiving } from '@/api/warehouse'
+import { delOutBound } from '@/api/outbound'
 
 export default {
   data() {
     return {
+      dialogVisible: false,
       isShow: false,
       inputRkdh: '',
       inputYdbh: '',
@@ -182,10 +223,41 @@ export default {
         current: 1,
         size: 10
       },
-      total: ''
+      total: '',
+      statusList: [
+        {
+          type: 1,
+          value: '新建'
+        },
+        {
+          type: 2,
+          value: '收货中'
+        },
+        {
+          type: 3,
+          value: '已取消'
+        },
+        {
+          type: 4,
+          value: '收货完成'
+        },
+        {
+          type: 5,
+          value: '上架中'
+        },
+        {
+          type: 6,
+          value: '上架完成'
+        }
+      ],
+      currentInfo: {}
     }
   },
   methods: {
+    editOutbound(current) {
+      this.$store.commit('outbound/editCurrent', current)
+      this.$router.push('addOutbound')
+    },
     async getPageDetail() {
       const {
         data: { data }
@@ -224,7 +296,7 @@ export default {
         path: '/navbar/CheckDetails'
       })
     },
-    changeList(selection, row) {
+    changeList(selection) {
       console.log(selection)
       this.checkedList = selection
       console.log(this.checkedList)
@@ -254,6 +326,32 @@ export default {
       this.errorWhy = ''
       this.checkedIdList = []
       this.$refs.closeShow.clearSelection()
+    },
+    formatterStatus(a, b, cellValue) {
+      const useType = this.statusList.find((item) => item.type === cellValue)?.value
+      return useType || ''
+    },
+    handleDel(str) {
+      this.currentInfo = str
+      this.dialogVisible = true
+    },
+    async btnOk() {
+      this.dialogVisible = false
+      await delOutBound({
+        id: this.currentInfo.id
+      })
+      this.$message.success('取消成功')
+      await this.getPageDetail()
+    },
+    async onGenerate(current) {
+      this.isShow = true
+      this.checkedIdList.push(current.id)
+      const {
+        data: { data }
+      } = await postipsReceiving(this.checkedIdList)
+      console.log(data)
+      this.errorWhy = data.errors
+      this.errorWhy = this.errorWhy.toString()
     }
   },
   created() {
@@ -356,9 +454,8 @@ export default {
   }
 
   .title {
-    margin: 0 10px;
-    margin-bottom: 10px;
-    font-size: 14px;
+    font-weight: 700;
+    font-size: 16px;
     color: #332929;
     line-height: 22px;
   }
@@ -407,6 +504,42 @@ export default {
       line-height: 22px;
       padding-right: 10px;
       text-align: left;
+    }
+  }
+
+  .cancelDailog {
+    .outboundDia {
+      padding: 15px;
+      height: 50px;
+      box-shadow: 0 0 6px 0 rgb(144 142 142 / 17%);
+      font-weight: normal;
+      font-size: 16px;
+    }
+
+    /deep/ .el-dialog__header {
+      padding: 0;
+    }
+
+    .btnOk {
+      background-color: #ffb200;
+      color: #000;
+      font-size: 14px;
+      border: none;
+
+      &:hover {
+        background-color: #ff8e00;
+      }
+    }
+
+    .btnCancel {
+      background-color: #f8f5f5;
+      color: #000;
+      font-size: 14px;
+      border: none;
+
+      &:hover {
+        background-color: #ffb200;
+      }
     }
   }
 }

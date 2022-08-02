@@ -7,6 +7,7 @@ import invoice from './modules/invoice'
 import editPage from './modules/editPage'
 import reservoir from './modules/reservoir'
 import outbound from '@/store/modules/outbound'
+import CheckDetails from '@/store/modules/CheckDetails'
 
 Vue.use(Vuex)
 
@@ -21,6 +22,7 @@ export default new Vuex.Store({
     invoice,
     editPage,
     reservoir,
-    outbound
+    outbound,
+    CheckDetails
   }
 })
