@@ -73,6 +73,10 @@ const routes = [
       {
         path: 'task-add',
         component: () => import('@/views/taskAdd')
+      },
+      {
+        path: 'sure',
+        component: () => import('@/views/taskAdd/sure')
       }
     ]
   }

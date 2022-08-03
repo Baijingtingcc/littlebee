@@ -8,6 +8,7 @@ import editPage from './modules/editPage'
 import reservoir from './modules/reservoir'
 import outbound from '@/store/modules/outbound'
 import CheckDetails from '@/store/modules/CheckDetails'
+import sure from '@/store/modules/sure'
 
 Vue.use(Vuex)
 
@@ -23,6 +24,7 @@ export default new Vuex.Store({
     editPage,
     reservoir,
     outbound,
-    CheckDetails
+    CheckDetails,
+    sure
   }
 })

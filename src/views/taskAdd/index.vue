@@ -195,30 +195,35 @@ export default {
     formatterTask(a, b, cellVal) {
       return this.taskList.find(item => item.value === cellVal)?.text
     },
+    // 查看详情
     currentFihsh(current) {
-      console.log(current)
+      this.$store.commit('sure/sureEdit', current.masterId)
+      this.$router.push('sure')
     },
+    // 页码
     handleCurrentChange(val) {
       console.log(val)
       this.page.current = val
       this.getGroundingList()
     },
+    // 条数
     handleSizeChange(val) {
       console.log(val)
       this.page.size = val
       this.getGroundingList()
     },
+    // 重置
     onReset() {
-      console.log('重置')
       this.inputSjbh = ''
       this.inputRkdh = ''
       this.inputHzmc = ''
       this.getGroundingList()
     },
+    // 搜索
     onSearch() {
-      console.log('搜索')
       this.getGroundingList()
     },
+    // 表格数据
     async getGroundingList() {
       const { data: { data } } = await getGroundingList({
         current: this.page.current,
